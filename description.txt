@@ -1,0 +1,62 @@
+Dự án này là một ứng dụng web được xây dựng bằng Next.js (v15), sử dụng React 19, TypeScript và TailwindCSS để phát triển giao diện hiện đại, dễ mở rộng.
+
+---
+
+# 1. Công nghệ sử dụng
+- **Next.js**: Framework chính cho phát triển ứng dụng web.
+- **React 19**: Thư viện UI.
+- **TypeScript**: Kiểu tĩnh cho JavaScript.
+- **TailwindCSS**: Thiết kế giao diện nhanh, tiện lợi.
+- **react-hook-form**: Xử lý form và quản lý trạng thái form.
+- **zod**: Xác thực và kiểm tra dữ liệu form.
+- **Radix UI**: Các thành phần UI như dropdown, label.
+- **lucide-react, react-icons**: Icon.
+- **next-themes**: Hỗ trợ dark/light mode.
+- **sonner**: Toast notification.
+
+# 2. Cấu trúc thư mục chính
+- `src/`
+  - `app/`: Chứa các route chính của ứng dụng.
+    - `(auth)/login`, `(auth)/register`: Trang đăng nhập, đăng ký.
+    - `me/`: Trang cá nhân, profile.
+    - `api/auth/route.ts`: API xác thực.
+    - `globals.css`, `layout.tsx`, `page.tsx`: Cấu hình layout và style tổng thể.
+  - `components/`: Các thành phần giao diện tái sử dụng.
+    - `form/`: Các form như login-form.tsx, register-form.tsx (dùng react-hook-form + zod).
+    - `auth/`: Các component liên quan xác thực (LoginForm.tsx, RegisterForm.tsx).
+    - `ui/`: Các UI component như button, dropdown-menu, input, label, toast.
+    - `layout/`: header, footer.
+    - `user/`: user-menu.
+    - `mode-toggle.tsx`, `theme-provider.tsx`: Đổi theme sáng/tối.
+  - `SchemaValidations/`: Định nghĩa schema xác thực bằng zod cho account, auth.
+  - `lib/utils.ts`: Các hàm tiện ích.
+  - `providers/`: app-provider, toast-provider (cung cấp context cho toàn app).
+  - `config.ts`, `middleware.ts`: Cấu hình và middleware Next.js.
+
+# 3. Chức năng chính
+- Đăng ký, đăng nhập với xác thực phía client (zod) và server (API route).
+- Quản lý theme (dark/light) cho toàn bộ ứng dụng.
+- Thông báo realtime (toast) khi thao tác thành công/thất bại.
+- Trang cá nhân (me/profile) hiển thị thông tin người dùng.
+- UI hiện đại, responsive, dễ mở rộng.
+
+# 4. Điểm nổi bật
+- Toàn bộ form sử dụng react-hook-form kết hợp zod để validation mạnh mẽ, realtime feedback cho người dùng.
+- Sử dụng context provider để quản lý theme, toast và các state toàn cục.
+- Component hóa toàn bộ giao diện giúp dễ bảo trì, tái sử dụng và mở rộng.
+- Tách biệt rõ ràng giữa logic giao diện (component), logic xác thực (schema + api), và cấu hình hệ thống.
+
+# 5. Thư viện/phụ thuộc chính (package.json)
+- next, react, react-dom, typescript, tailwindcss, react-hook-form, zod, radix-ui, lucide-react, next-themes, sonner, class-variance-authority, clsx, react-icons, tailwind-merge, ...
+
+# 6. Hướng dẫn khởi động
+- Cài đặt: `npm install`
+- Chạy dev: `npm run dev` (truy cập http://localhost:3000)
+
+# 7. Ghi chú khác
+- Đã cấu hình eslint, typescript, tailwind, postcss.
+- Có thể mở rộng thêm các tính năng xác thực, quản lý người dùng, hoặc tích hợp backend riêng biệt (ví dụ NestJS).
+
+---
+
+File này mô tả chi tiết codebase để các AI khác hoặc lập trình viên có thể hiểu nhanh về cấu trúc, chức năng và công nghệ của dự án mà không cần xem toàn bộ mã nguồn.
