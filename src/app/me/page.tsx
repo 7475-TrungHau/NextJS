@@ -8,12 +8,9 @@ export default async function ProfilePage() {
     const sessionToken = cookieStore.get('sessionToken')?.value;
     if (!sessionToken) {
         throw new Error('Unauthorized: No session token found');
-    }else{
+    } else {
         const result = await accountApi.me(sessionToken ?? '');
     }
-
-   
-   
 
     return (
         <div>

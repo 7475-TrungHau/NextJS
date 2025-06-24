@@ -12,7 +12,7 @@ import evnConfig from '@/config';
 import { useToast } from '@/providers/toast-provider';
 import authApi from '@/apiRequest/auth';
 import { useRouter } from 'next/navigation';
-import { useAppContext } from '@/providers/app-provider';
+import { sessionToken } from '@/lib/http';
 
 
 const RegisterForm = () => {
@@ -20,7 +20,6 @@ const RegisterForm = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const { error, success } = useToast();
     const router = useRouter();
-    const { setSessionToken } = useAppContext();
     // Tạo form
     const form = useForm<RegisterBodyType>({
         resolver: zodResolver(RegisterBody),
@@ -37,12 +36,12 @@ const RegisterForm = () => {
         try {
             const result = await authApi.register(data);
             console.log('result', result);
-            if (result){
-                const resultFromNextServer = await authApi.auth({ sessionToken: result.payload.data.token});
-                if(resultFromNextServer.status === 201){                    
-                    setSessionToken(result.payload.data.token);
+            if (result) {
+                const resultFromNextServer = await authApi.auth({ sessionToken: result.payload.data.token });
+                if (resultFromNextServer.status === 201) {
+                    sessionToken.value = result.payload.data.token;
                     router.push('/me');
-                }else{
+                } else {
                     error('Error', "set cookies thất bại");
                 }
             }

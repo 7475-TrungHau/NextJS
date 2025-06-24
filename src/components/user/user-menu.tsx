@@ -8,12 +8,15 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { useAppContext } from "@/providers/app-provider";
+import { clientSessionToken } from "@/lib/http";
 import { Button } from "@/components/ui/button";
 import { User, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import evnConfig from "@/config";
+import accountApi from "@/apiRequest/account";
+import { AccountResType } from "@/SchemaValidations/acount.schema";
+import authApi from "@/apiRequest/auth";
 
 interface UserInfo {
   id: string;
@@ -23,62 +26,62 @@ interface UserInfo {
 }
 
 export default function UserMenu() {
-  const { sessionToken, setSessionToken } = useAppContext();
   const [user, setUser] = useState<UserInfo | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    if (!sessionToken) {
+    if (!clientSessionToken.value) {
+
       setUser(null);
       return;
     }
 
     const fetchUser = async () => {
       try {
-        const res = await fetch(
-          `${evnConfig.NEXT_PUBLIC_API_ENDPOINT}/account/me`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${sessionToken}`,
-            },
-            cache: "no-store",
-          }
-        );
-        if (!res.ok) throw new Error("Failed to fetch user");
-        const payload = await res.json();
-        setUser(payload.data);
+        const res = await accountApi.meClient();
+        if (!res?.payload?.data) {
+          throw new Error('Invalid response data');
+        }
+
+        const userData: UserInfo = {
+          id: res.payload.data.id.toString(),
+          name: res.payload.data.name,
+          email: res.payload.data.email,
+          avatar: '',
+        };
+
+        setUser(userData);
       } catch (err) {
-        console.error(err);
+        console.error('Failed to fetch user data:', err);
+        setUser(null);
       }
     };
     fetchUser();
-  }, [sessionToken]);
+  }, [clientSessionToken]);
 
   const clearCookieNextServer = async () => {
     try {
-        const resultFromNextServer = await fetch('/api/auth', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({sessionToken: ''}),
-        });
-        console.log(resultFromNextServer);
-        if (!resultFromNextServer.ok) throw new Error('Failed to clear cookie');
+      // const resultFromNextServer = await fetch('/api/auth', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({ clientSessionToken: clientSessionToken.value }),
+      // });
+      const resultFromNextServer = await authApi.auth({ sessionToken: '' });
+
+      if (resultFromNextServer.status !== 200) throw new Error('Failed to clear cookie');
     } catch (err) {
-        console.error(err);
+      console.error(err);
     }
   }
 
   const handleLogout = () => {
-    setSessionToken("");
     clearCookieNextServer();
     router.push("/login");
   };
 
-  if (!sessionToken) return null;
+  if (!clientSessionToken.value) return null;
 
   return (
     <DropdownMenu>

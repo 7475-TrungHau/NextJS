@@ -4,13 +4,24 @@ import { ModeToggle } from "@/components/mode-toggle";
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
-import { useAppContext } from "@/providers/app-provider";
-import UserMenu from "@/components/user/user-menu";
+import { useEffect, useState } from "react";
 
-const Header = () => {
+import UserMenu from "@/components/user/user-menu";
+import { clientSessionToken } from "@/lib/http";
+
+export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const { sessionToken } = useAppContext();
+    const [Token, setToken] = useState(clientSessionToken.value);
+
+    useEffect(() => {
+        const unsubscribe = clientSessionToken.on((newToken) => {
+            setToken(newToken);
+        });
+
+        return () => {
+            unsubscribe();
+        };
+    }, []);
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -59,7 +70,7 @@ const Header = () => {
                         {/* Desktop Actions */}
                         <div className="hidden md:flex gap-4 items-center">
                             <ModeToggle />
-                            {sessionToken ? (
+                            {Token ? (
                                 <UserMenu />
                             ) : (
                                 <div className="flex gap-2">
@@ -126,7 +137,7 @@ const Header = () => {
                             </nav>
 
                             {/* Mobile Auth Buttons */}
-                            {sessionToken ? (
+                            {Token ? (
                                 <div className="flex justify-center pt-2 border-t border-slate-200 dark:border-slate-700">
                                     <UserMenu />
                                 </div>
@@ -150,6 +161,4 @@ const Header = () => {
             </div>
         </div>
     );
-};
-
-export default Header;
+}

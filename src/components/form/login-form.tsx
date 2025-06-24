@@ -9,14 +9,14 @@ import { LoginBodyType, LoginBody } from '@/SchemaValidations/auth.schema';
 import { EyeOff, Eye } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/providers/toast-provider';
-import { useAppContext } from '@/providers/app-provider';
+import { clientSessionToken } from '@/lib/http';
 import authApi from '@/apiRequest/auth';
 import { useRouter } from 'next/navigation';
 
 
 const LoginForm = () => {
     const { success, error } = useToast();
-    const { setSessionToken } = useAppContext();
+
     const router = useRouter();
 
     const [showPassword, setShowPassword] = useState(false);
@@ -30,15 +30,13 @@ const LoginForm = () => {
 
     async function onSubmit(data: LoginBodyType) {
         try {
-           const result = await authApi.login (data);
-           console.log('result', result);
-            if (result){
-                const resultFromNextServer = await authApi.auth({ sessionToken: result.payload.data.token});
-                if(resultFromNextServer.status === 201){
-                    
-                    setSessionToken(result.payload.data.token);
+            const result = await authApi.login(data);
+            console.log('result', result);
+            if (result) {
+                const resultFromNextServer = await authApi.auth({ sessionToken: result.payload.data.token });
+                if (resultFromNextServer.status === 201) {
                     router.push('/me');
-                }else{
+                } else {
                     error('Error', "set cookies thất bại");
                 }
             }

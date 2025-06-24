@@ -25,7 +25,9 @@ const ToastComponent = ({ toast, onRemove }: ToastProps) => {
     useEffect(() => {
         setIsVisible(true);
         const timer = setTimeout(() => {
-            handleRemove();
+            requestAnimationFrame(() => {
+                handleRemove();
+            });
         }, toast.duration || 3000);
         return () => {
             clearTimeout(timer);
@@ -34,9 +36,11 @@ const ToastComponent = ({ toast, onRemove }: ToastProps) => {
 
     const handleRemove = () => {
         setIsRemoving(true);
-        setTimeout(() => {
-            onRemove(toast.id);
-        }, 300);
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                onRemove(toast.id);
+            }, 300);
+        });
     }
 
     const getToastStyles = () => {
